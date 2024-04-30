@@ -31,9 +31,19 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    app.post('/spots', async(req, res) => {
-      const newSpots = req.body;
-      console.log(newSpots)
+    const countryCollection = client.db("countryDB").collection('country');
+   
+    app.get('/country', async(req, res) => {
+      const cursor = countryCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+
+    app.post('/country', async(req, res) => {
+      const newCountry = req.body;
+      console.log(newCountry)
+      const result = await countryCollection.insertOne(newCountry);
+      res.send(result)
     })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
