@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 require('dotenv').config();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 4000;
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 //middleware
@@ -54,7 +54,41 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result);
     })
-  
+    app.get('/update/:id', async(req, res) => {
+      console.log(req.params.id )
+      const result = await countryCollection.findOne({_id: 
+       new ObjectId(req.params.id ),
+      })
+      console.log(result);
+        res.send(result);
+    })
+    app.patch('/country/update1/:id', async(req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = {_id: new ObjectId(id)}
+      
+      const option = {upsert: true}
+      const country = req.body;
+      
+      const updateDoc = {
+        $set: {
+          countryName: country.countryName,
+          touristsSpotName: country.touristsSpotName,
+          location:country.location,
+          averageCost: country.averageCost,
+          session: country.session,
+          travelTime: country.travelTime,
+          touristsSpotName: country.touristsSpotName,
+          photoUrl: country.photoUrl,
+          totaVisitorsPerYear: country.totaVisitorsPerYear,
+          description: country.description,
+          email: country.email
+
+        }
+      }
+      const result = await countryCollection.updateOne(query, updateDoc, option)
+      res.send(result)
+    })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
